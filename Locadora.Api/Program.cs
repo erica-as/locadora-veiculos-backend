@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Locadora.Api.Domain.Interfaces;
 using Locadora.Api.Infra.Data;
 using Locadora.Api.Infra.Repositories;
+using Locadora.Api.Middleware;
+using Locadora.Api.Service.Interfaces;
+using Locadora.Api.Service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,13 +17,26 @@ builder.Services.AddScoped<IVeiculoRepository, VeiculoRepository>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IAluguelRepository, AluguelRepository>();
 
+builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IFabricanteService, FabricanteService>();
+builder.Services.AddScoped<IVeiculoService, VeiculoService>();
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+builder.Services.AddScoped<IAluguelService, AluguelService>();
+
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.MapControllers();
 
 app.Run();

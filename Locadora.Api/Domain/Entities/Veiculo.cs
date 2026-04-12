@@ -12,8 +12,8 @@ public class Veiculo
     public double Quilometragem { get; set; }
     
     public int FabricanteId { get; set; }
-    public Fabricante Fabricante { get; set; }
+    public Fabricante? Fabricante { get; set; }
     
     public int CategoriaId { get; set; }
-    public Categoria Categoria { get; set; }
+    public Categoria? Categoria { get; set; }
 }

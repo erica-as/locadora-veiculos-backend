@@ -19,7 +19,7 @@ Arquivo: `arquivos/mer-locadora-veiculos.png`
 ## Status Geral da Atividade
 
 - [x] Etapa 1: Modelagem do Banco de Dados
-- [ ] Etapa 2: Implementacao do Backend
+- [x] Etapa 2: Implementacao do Backend
 - [ ] Etapa 3: Testes e Documentacao
 - [ ] Etapa 4: Video Apresentacao (Pitch)
 
@@ -117,5 +117,5 @@ Requisito atendido com 5 entidades no dominio.
 
 ## Observacao Atual
 
-No momento, o projeto esta documentado e implementado ate a **Etapa 1**.
+No momento, o projeto esta documentado e implementado ate a **Etapa 2**.
 

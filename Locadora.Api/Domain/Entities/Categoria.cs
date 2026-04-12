@@ -9,5 +9,5 @@ public class Categoria
     [Required]
     public string Nome { get; set; } // Ex: Econômico, Luxo
     public decimal ValorBaseDiaria { get; set; }
-    public ICollection<Veiculo> Veiculos { get; set; }
+    public ICollection<Veiculo> Veiculos { get; set; } = new List<Veiculo>();
 }
