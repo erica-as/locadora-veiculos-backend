@@ -135,7 +135,7 @@ public class AluguelController : ControllerBase
     }
     
     /// <summary>
-    /// FILTRO 1: Obtém aluguéis ativos (não devolvidos)
+    /// Obtém aluguéis ativos (não devolvidos)
     /// Demonstra INNER JOIN entre Aluguel e Cliente
     /// Retorna todos os aluguéis onde DataDevolucao é nula
     /// </summary>
@@ -150,7 +150,7 @@ public class AluguelController : ControllerBase
     }
     
     /// <summary>
-    /// FILTRO 2: Obtém aluguéis por cliente
+    /// Obtém aluguéis por cliente
     /// Demonstra INNER JOIN múltiplo entre Aluguel, Cliente, Veiculo, Fabricante e Categoria
     /// Retorna todos os aluguéis de um cliente específico
     /// </summary>
@@ -175,7 +175,7 @@ public class AluguelController : ControllerBase
     }
     
     /// <summary>
-    /// FILTRO 3: Obtém aluguéis por período
+    /// Obtém aluguéis por período
     /// Demonstra filtro de intervalo de datas com validação
     /// Retorna aluguéis que ocorrem dentro do período especificado
     /// Parâmetros via QueryString: ?dataInicio=2025-01-01&dataFim=2025-12-31
@@ -207,7 +207,7 @@ public class AluguelController : ControllerBase
     }
     
     /// <summary>
-    /// FILTRO 4: Obtém aluguéis com histórico de devolução (devolvidos)
+    /// Obtém aluguéis com histórico de devolução (devolvidos)
     /// Demonstra verificação de Nullable (LEFT JOIN implícito)
     /// Retorna aluguéis onde DataDevolucao e KmFinal não são nulas
     /// </summary>
@@ -222,7 +222,7 @@ public class AluguelController : ControllerBase
     }
     
     /// <summary>
-    /// FILTRO 5: Obtém aluguéis por veículo com detalhes completos
+    /// Obtém aluguéis por veículo com detalhes completos
     /// Demonstra INNER JOIN múltiplo entre Aluguel, Veiculo, Categoria e Fabricante
     /// Retorna todo o histórico de aluguéis de um veículo específico
     /// </summary>

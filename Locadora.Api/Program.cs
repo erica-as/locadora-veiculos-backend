@@ -25,7 +25,27 @@ builder.Services.AddScoped<IAluguelService, AluguelService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Locadora de Veículos API",
+        Version = "v1.0",
+        Description = "API para gerenciar aluguel de veículos",
+        Contact = new Microsoft.OpenApi.Models.OpenApiContact
+        {
+            Name = "Locadora de Veículos"
+        }
+    });
+
+    // Adicionar documentação XML dos comentários
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = System.IO.Path.Combine(System.AppContext.BaseDirectory, xmlFile);
+    if (System.IO.File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
+});
 
 var app = builder.Build();
 
