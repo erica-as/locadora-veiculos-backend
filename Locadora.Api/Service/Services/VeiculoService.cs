@@ -1,23 +1,44 @@
 using Locadora.Api.Domain.Entities;
+using Locadora.Api.Domain.Exceptions;
 using Locadora.Api.Domain.Interfaces;
 using Locadora.Api.Service.Interfaces;
 
 namespace Locadora.Api.Service.Services;
 
-public class VeiculoService : IVeiculoService
+public class VeiculoService : Service<Veiculo, IVeiculoRepository>, IVeiculoService
 {
-    private readonly IVeiculoRepository _repository;
+    public VeiculoService(IVeiculoRepository repository) : base(repository)
+    {
+    }
 
-    public VeiculoService(IVeiculoRepository repository) => _repository = repository;
+    public override async Task AdicionarAsync(Veiculo veiculo)
+    {
+        ValidarVeiculo(veiculo);
+        await base.AdicionarAsync(veiculo);
+    }
 
-    public Task<IEnumerable<Veiculo>> ObterTodosAsync() => _repository.ObterTodosAsync();
+    public override async Task AtualizarAsync(Veiculo veiculo)
+    {
+        ValidarVeiculo(veiculo);
+        await base.AtualizarAsync(veiculo);
+    }
 
-    public Task<Veiculo> ObterPorIdAsync(int id) => _repository.ObterPorIdAsync(id);
+    private void ValidarVeiculo(Veiculo veiculo)
+    {
+        if (string.IsNullOrWhiteSpace(veiculo.Modelo))
+            throw new ValidacaoException("Modelo do veículo é obrigatório.");
 
-    public Task AdicionarAsync(Veiculo veiculo) => _repository.AdicionarAsync(veiculo);
+        if (veiculo.AnoFabricacao < 1950 || veiculo.AnoFabricacao > DateTime.UtcNow.Year + 1)
+            throw new ValidacaoException("Ano de fabricação inválido.");
 
-    public Task AtualizarAsync(Veiculo veiculo) => _repository.AtualizarAsync(veiculo);
+        if (veiculo.Quilometragem < 0)
+            throw new ValidacaoException("Quilometragem não pode ser negativa.");
 
-    public Task RemoverAsync(int id) => _repository.RemoverAsync(id);
+        if (veiculo.FabricanteId <= 0)
+            throw new ValidacaoException("FabricanteId deve ser maior que zero.");
+
+        if (veiculo.CategoriaId <= 0)
+            throw new ValidacaoException("CategoriaId deve ser maior que zero.");
+    }
 }
 

@@ -2,12 +2,7 @@ using Locadora.Api.Domain.Entities;
 
 namespace Locadora.Api.Service.Interfaces;
 
-public interface IFabricanteService
+public interface IFabricanteService : IService<Fabricante>
 {
-    Task<IEnumerable<Fabricante>> ObterTodosAsync();
-    Task<Fabricante> ObterPorIdAsync(int id);
-    Task AdicionarAsync(Fabricante fabricante);
-    Task AtualizarAsync(Fabricante fabricante);
-    Task RemoverAsync(int id);
 }
 

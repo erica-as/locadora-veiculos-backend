@@ -2,12 +2,7 @@ using Locadora.Api.Domain.Entities;
 
 namespace Locadora.Api.Service.Interfaces;
 
-public interface IVeiculoService
+public interface IVeiculoService : IService<Veiculo>
 {
-    Task<IEnumerable<Veiculo>> ObterTodosAsync();
-    Task<Veiculo> ObterPorIdAsync(int id);
-    Task AdicionarAsync(Veiculo veiculo);
-    Task AtualizarAsync(Veiculo veiculo);
-    Task RemoverAsync(int id);
 }
 

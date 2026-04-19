@@ -20,6 +20,12 @@ Arquivo: `arquivos/mer-locadora-veiculos.png`
 
 - [x] Etapa 1: Modelagem do Banco de Dados
 - [x] Etapa 2: Implementacao do Backend
+  - [x] 2.1 - ASP.NET Core RESTful
+  - [x] 2.2 - CRUD Completo (5 Controllers)
+  - [x] 2.3 - Entity Framework + SQL Server
+  - [x] 2.4 - Validacao de dados e tratamento de erros
+  - [x] 2.5 - 5 Filtros com JOINs diferentes
+  - [x] REFATORACAO: Generic Repository Pattern (eliminada duplicacao de codigo)
 - [ ] Etapa 3: Testes e Documentacao
 - [ ] Etapa 4: Video Apresentacao (Pitch)
 

@@ -5,53 +5,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Locadora.Api.Infra.Repositories;
 
-public class AluguelRepository : IAluguelRepository
+public class AluguelRepository : Repository<Aluguel>, IAluguelRepository
 {
-    private readonly LocadoraContext _context;
-
-    public AluguelRepository(LocadoraContext context) => _context = context;
-
-    public async Task<IEnumerable<Aluguel>> ObterTodosAsync() => 
-        await _context.Alugueis.Include(a => a.Cliente).Include(a => a.Veiculo).ToListAsync();
-
-    public async Task<Aluguel> ObterPorIdAsync(int id)
+    public AluguelRepository(LocadoraContext context) : base(context)
     {
-        var aluguel = await _context.Alugueis.FindAsync(id);
-        return aluguel ?? throw new KeyNotFoundException($"Aluguel com id {id} nao encontrado.");
-    }
-    
-    public async Task AdicionarAsync(Aluguel aluguel)
-    {
-        await _context.Alugueis.AddAsync(aluguel);
-        await _context.SaveChangesAsync();
     }
 
-    public Task AtualizarAsync(Aluguel aluguel)
+    // Sobrescrever ObterTodosAsync para incluir relacionamentos
+    public override async Task<IEnumerable<Aluguel>> ObterTodosAsync()
     {
-        _context.Alugueis.Update(aluguel);
-        return _context.SaveChangesAsync();
+        return await DbSet.Include(a => a.Cliente).Include(a => a.Veiculo).ToListAsync();
     }
 
-    public async Task RemoverAsync(int id)
-    {
-        var aluguel = await _context.Alugueis.FindAsync(id);
-        if (aluguel is null)
-            throw new KeyNotFoundException($"Aluguel com id {id} nao encontrado.");
+    // ...existing code...
 
-        _context.Alugueis.Remove(aluguel);
-        await _context.SaveChangesAsync();
-    }
-
-    
-    // Filtros - Requisito 2.5
-    
     /// <summary>
     /// Filtro 1: Obter aluguéis ativos (não devolvidos)
     /// Demonstra INNER JOIN entre Aluguel e Cliente
     /// </summary>
     public async Task<IEnumerable<Aluguel>> ObterAlugueisAtivosAsync()
     {
-        return await _context.Alugueis
+        return await DbSet
             .Where(a => a.DataDevolucao == null)
             .Include(a => a.Cliente)
             .Include(a => a.Veiculo)
@@ -67,7 +41,7 @@ public class AluguelRepository : IAluguelRepository
         if (clienteId <= 0)
             throw new ArgumentException("ClienteId deve ser maior que zero.", nameof(clienteId));
 
-        return await _context.Alugueis
+        return await DbSet
             .Where(a => a.ClienteId == clienteId)
             .Include(a => a.Cliente)
             .Include(a => a.Veiculo)
@@ -86,7 +60,7 @@ public class AluguelRepository : IAluguelRepository
         if (dataInicio > dataFim)
             throw new ArgumentException("Data de início não pode ser maior que data de fim.");
 
-        return await _context.Alugueis
+        return await DbSet
             .Where(a => a.DataInicio >= dataInicio && a.DataFimPrevista <= dataFim)
             .Include(a => a.Cliente)
             .Include(a => a.Veiculo)
@@ -99,7 +73,7 @@ public class AluguelRepository : IAluguelRepository
     /// </summary>
     public async Task<IEnumerable<Aluguel>> ObterAlugueisDevolvosAsync()
     {
-        return await _context.Alugueis
+        return await DbSet
             .Where(a => a.DataDevolucao != null && a.KmFinal != null)
             .Include(a => a.Cliente)
             .Include(a => a.Veiculo)
@@ -115,7 +89,7 @@ public class AluguelRepository : IAluguelRepository
         if (veiculoId <= 0)
             throw new ArgumentException("VeiculoId deve ser maior que zero.", nameof(veiculoId));
 
-        return await _context.Alugueis
+        return await DbSet
             .Where(a => a.VeiculoId == veiculoId)
             .Include(a => a.Cliente)
             .Include(a => a.Veiculo)

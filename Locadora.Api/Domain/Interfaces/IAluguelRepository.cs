@@ -1,14 +1,8 @@
 using Locadora.Api.Domain.Entities;
 namespace Locadora.Api.Domain.Interfaces;
 
-public interface IAluguelRepository
+public interface IAluguelRepository : IRepository<Aluguel>
 {
-    Task<IEnumerable<Aluguel>> ObterTodosAsync();
-    Task<Aluguel> ObterPorIdAsync(int id);
-    Task AdicionarAsync(Aluguel aluguel);
-    Task AtualizarAsync(Aluguel aluguel);
-    Task RemoverAsync(int id);
-    
     // Filtros - Requisito 2.5
     Task<IEnumerable<Aluguel>> ObterAlugueisAtivosAsync();
     Task<IEnumerable<Aluguel>> ObterAluguelsPorClienteAsync(int clienteId);

@@ -1,4 +1,5 @@
 using Locadora.Api.Domain.Entities;
+using Locadora.Api.Domain.Exceptions;
 using Locadora.Api.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,14 +30,15 @@ public class FabricantesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] Fabricante fabricante)
     {
-        if (string.IsNullOrWhiteSpace(fabricante.Nome))
-            ModelState.AddModelError(nameof(fabricante.Nome), "Nome do fabricante e obrigatorio.");
-
-        if (!ModelState.IsValid)
-            return ValidationProblem(ModelState);
-
-        await _service.AdicionarAsync(fabricante);
-        return CreatedAtAction(nameof(GetById), new { id = fabricante.Id }, fabricante);
+        try
+        {
+            await _service.AdicionarAsync(fabricante);
+            return CreatedAtAction(nameof(GetById), new { id = fabricante.Id }, fabricante);
+        }
+        catch (ValidacaoException ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
     }
 
     [HttpPut("{id:int}")]
@@ -45,16 +47,16 @@ public class FabricantesController : ControllerBase
         if (id != fabricante.Id)
             return BadRequest(new { mensagem = "O id da rota deve ser igual ao id do corpo." });
 
-        if (string.IsNullOrWhiteSpace(fabricante.Nome))
-            ModelState.AddModelError(nameof(fabricante.Nome), "Nome do fabricante e obrigatorio.");
-
-        if (!ModelState.IsValid)
-            return ValidationProblem(ModelState);
-
-        await _service.ObterPorIdAsync(id);
-        await _service.AtualizarAsync(fabricante);
-
-        return NoContent();
+        try
+        {
+            await _service.ObterPorIdAsync(id);
+            await _service.AtualizarAsync(fabricante);
+            return NoContent();
+        }
+        catch (ValidacaoException ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
     }
 
     [HttpDelete("{id:int}")]

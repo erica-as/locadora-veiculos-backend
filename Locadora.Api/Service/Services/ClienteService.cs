@@ -1,23 +1,40 @@
+using System.ComponentModel.DataAnnotations;
 using Locadora.Api.Domain.Entities;
+using Locadora.Api.Domain.Exceptions;
 using Locadora.Api.Domain.Interfaces;
 using Locadora.Api.Service.Interfaces;
 
 namespace Locadora.Api.Service.Services;
 
-public class ClienteService : IClienteService
+public class ClienteService : Service<Cliente, IClienteRepository>, IClienteService
 {
-    private readonly IClienteRepository _repository;
+    public ClienteService(IClienteRepository repository) : base(repository)
+    {
+    }
 
-    public ClienteService(IClienteRepository repository) => _repository = repository;
+    public override async Task AdicionarAsync(Cliente cliente)
+    {
+        ValidarCliente(cliente);
+        await base.AdicionarAsync(cliente);
+    }
 
-    public Task<IEnumerable<Cliente>> ObterTodosAsync() => _repository.ObterTodosAsync();
+    public override async Task AtualizarAsync(Cliente cliente)
+    {
+        ValidarCliente(cliente);
+        await base.AtualizarAsync(cliente);
+    }
 
-    public Task<Cliente> ObterPorIdAsync(int id) => _repository.ObterPorIdAsync(id);
+    private void ValidarCliente(Cliente cliente)
+    {
+        if (string.IsNullOrWhiteSpace(cliente.Nome))
+            throw new ValidacaoException("Nome do cliente é obrigatório.");
 
-    public Task AdicionarAsync(Cliente cliente) => _repository.AdicionarAsync(cliente);
+        if (string.IsNullOrWhiteSpace(cliente.CPF) || cliente.CPF.Length != 11 || !cliente.CPF.All(char.IsDigit))
+            throw new ValidacaoException("CPF deve conter exatamente 11 dígitos numéricos.");
 
-    public Task AtualizarAsync(Cliente cliente) => _repository.AtualizarAsync(cliente);
-
-    public Task RemoverAsync(int id) => _repository.RemoverAsync(id);
+        var emailValidator = new EmailAddressAttribute();
+        if (string.IsNullOrWhiteSpace(cliente.Email) || !emailValidator.IsValid(cliente.Email))
+            throw new ValidacaoException("Email inválido.");
+    }
 }
 

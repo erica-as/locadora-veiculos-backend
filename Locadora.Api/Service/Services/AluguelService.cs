@@ -1,26 +1,31 @@
 using Locadora.Api.Domain.Entities;
+using Locadora.Api.Domain.Exceptions;
 using Locadora.Api.Domain.Interfaces;
 using Locadora.Api.Service.Interfaces;
 
 namespace Locadora.Api.Service.Services;
 
-public class AluguelService : IAluguelService
+public class AluguelService : Service<Aluguel, IAluguelRepository>, IAluguelService
 {
     private readonly IAluguelRepository _repository;
 
-    public AluguelService(IAluguelRepository repository) => _repository = repository;
+    public AluguelService(IAluguelRepository repository) : base(repository)
+    {
+        _repository = repository;
+    }
 
-    public Task<IEnumerable<Aluguel>> ObterTodosAsync() => _repository.ObterTodosAsync();
+    public override async Task AdicionarAsync(Aluguel aluguel)
+    {
+        ValidarAluguel(aluguel);
+        await base.AdicionarAsync(aluguel);
+    }
 
-    public Task<Aluguel> ObterPorIdAsync(int id) => _repository.ObterPorIdAsync(id);
+    public override async Task AtualizarAsync(Aluguel aluguel)
+    {
+        ValidarAluguel(aluguel);
+        await base.AtualizarAsync(aluguel);
+    }
 
-    public Task AdicionarAsync(Aluguel aluguel) => _repository.AdicionarAsync(aluguel);
-
-    public Task AtualizarAsync(Aluguel aluguel) => _repository.AtualizarAsync(aluguel);
-
-    public Task RemoverAsync(int id) => _repository.RemoverAsync(id);
-
-    // Filtros - Requisito 2.5
     public Task<IEnumerable<Aluguel>> ObterAlugueisAtivosAsync() 
         => _repository.ObterAlugueisAtivosAsync();
 
@@ -35,5 +40,29 @@ public class AluguelService : IAluguelService
 
     public Task<IEnumerable<Aluguel>> ObterAluguelsPorVeiculoAsync(int veiculoId) 
         => _repository.ObterAluguelsPorVeiculoAsync(veiculoId);
+
+    private void ValidarAluguel(Aluguel aluguel)
+    {
+        if (aluguel.ClienteId <= 0)
+            throw new ValidacaoException("ClienteId deve ser maior que zero.");
+
+        if (aluguel.VeiculoId <= 0)
+            throw new ValidacaoException("VeiculoId deve ser maior que zero.");
+
+        if (aluguel.DataInicio == default)
+            throw new ValidacaoException("Data de início é obrigatória.");
+
+        if (aluguel.DataFimPrevista == default)
+            throw new ValidacaoException("Data de fim prevista é obrigatória.");
+
+        if (aluguel.DataInicio >= aluguel.DataFimPrevista)
+            throw new ValidacaoException("Data de início deve ser anterior à data de fim prevista.");
+
+        if (aluguel.KmInicial < 0)
+            throw new ValidacaoException("Quilometragem inicial não pode ser negativa.");
+
+        if (aluguel.ValorDiaria <= 0)
+            throw new ValidacaoException("Valor da diária deve ser maior que zero.");
+    }
 }
 

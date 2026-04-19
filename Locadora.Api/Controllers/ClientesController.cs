@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using Locadora.Api.Domain.Entities;
+using Locadora.Api.Domain.Exceptions;
 using Locadora.Api.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,12 +30,15 @@ public class ClientesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] Cliente cliente)
     {
-        ValidarCliente(cliente);
-        if (!ModelState.IsValid)
-            return ValidationProblem(ModelState);
-
-        await _service.AdicionarAsync(cliente);
-        return CreatedAtAction(nameof(GetById), new { id = cliente.Id }, cliente);
+        try
+        {
+            await _service.AdicionarAsync(cliente);
+            return CreatedAtAction(nameof(GetById), new { id = cliente.Id }, cliente);
+        }
+        catch (ValidacaoException ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
     }
 
     [HttpPut("{id:int}")]
@@ -44,14 +47,16 @@ public class ClientesController : ControllerBase
         if (id != cliente.Id)
             return BadRequest(new { mensagem = "O id da rota deve ser igual ao id do corpo." });
 
-        ValidarCliente(cliente);
-        if (!ModelState.IsValid)
-            return ValidationProblem(ModelState);
-
-        await _service.ObterPorIdAsync(id);
-        await _service.AtualizarAsync(cliente);
-
-        return NoContent();
+        try
+        {
+            await _service.ObterPorIdAsync(id);
+            await _service.AtualizarAsync(cliente);
+            return NoContent();
+        }
+        catch (ValidacaoException ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
     }
 
     [HttpDelete("{id:int}")]
@@ -59,16 +64,6 @@ public class ClientesController : ControllerBase
     {
         await _service.RemoverAsync(id);
         return NoContent();
-    }
-
-    private void ValidarCliente(Cliente cliente)
-    {
-        if (string.IsNullOrWhiteSpace(cliente.CPF) || cliente.CPF.Length != 11 || !cliente.CPF.All(char.IsDigit))
-            ModelState.AddModelError(nameof(cliente.CPF), "CPF deve conter exatamente 11 digitos numericos.");
-
-        var emailValidator = new EmailAddressAttribute();
-        if (string.IsNullOrWhiteSpace(cliente.Email) || !emailValidator.IsValid(cliente.Email))
-            ModelState.AddModelError(nameof(cliente.Email), "Email invalido.");
     }
 }
 

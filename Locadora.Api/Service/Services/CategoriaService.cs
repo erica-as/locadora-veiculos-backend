@@ -1,23 +1,35 @@
 using Locadora.Api.Domain.Entities;
+using Locadora.Api.Domain.Exceptions;
 using Locadora.Api.Domain.Interfaces;
 using Locadora.Api.Service.Interfaces;
 
 namespace Locadora.Api.Service.Services;
 
-public class CategoriaService : ICategoriaService
+public class CategoriaService : Service<Categoria, ICategoriaRepository>, ICategoriaService
 {
-    private readonly ICategoriaRepository _repository;
+    public CategoriaService(ICategoriaRepository repository) : base(repository)
+    {
+    }
 
-    public CategoriaService(ICategoriaRepository repository) => _repository = repository;
+    public override async Task AdicionarAsync(Categoria categoria)
+    {
+        ValidarCategoria(categoria);
+        await base.AdicionarAsync(categoria);
+    }
 
-    public Task<IEnumerable<Categoria>> ObterTodosAsync() => _repository.ObterTodosAsync();
+    public override async Task AtualizarAsync(Categoria categoria)
+    {
+        ValidarCategoria(categoria);
+        await base.AtualizarAsync(categoria);
+    }
 
-    public Task<Categoria> ObterPorIdAsync(int id) => _repository.ObterPorIdAsync(id);
+    private void ValidarCategoria(Categoria categoria)
+    {
+        if (string.IsNullOrWhiteSpace(categoria.Nome))
+            throw new ValidacaoException("Nome da categoria é obrigatório.");
 
-    public Task AdicionarAsync(Categoria categoria) => _repository.AdicionarAsync(categoria);
-
-    public Task AtualizarAsync(Categoria categoria) => _repository.AtualizarAsync(categoria);
-
-    public Task RemoverAsync(int id) => _repository.RemoverAsync(id);
+        if (categoria.ValorBaseDiaria < 0)
+            throw new ValidacaoException("Valor base da diária não pode ser negativo.");
+    }
 }
 
