@@ -19,5 +19,21 @@ public class AluguelService : IAluguelService
     public Task AtualizarAsync(Aluguel aluguel) => _repository.AtualizarAsync(aluguel);
 
     public Task RemoverAsync(int id) => _repository.RemoverAsync(id);
+
+    // Filtros - Requisito 2.5
+    public Task<IEnumerable<Aluguel>> ObterAlugueisAtivosAsync() 
+        => _repository.ObterAlugueisAtivosAsync();
+
+    public Task<IEnumerable<Aluguel>> ObterAluguelsPorClienteAsync(int clienteId) 
+        => _repository.ObterAluguelsPorClienteAsync(clienteId);
+
+    public Task<IEnumerable<Aluguel>> ObterAluguelsPorPeriodoAsync(DateTime dataInicio, DateTime dataFim) 
+        => _repository.ObterAluguelsPorPeriodoAsync(dataInicio, dataFim);
+
+    public Task<IEnumerable<Aluguel>> ObterAlugueisDevolvosAsync() 
+        => _repository.ObterAlugueisDevolvosAsync();
+
+    public Task<IEnumerable<Aluguel>> ObterAluguelsPorVeiculoAsync(int veiculoId) 
+        => _repository.ObterAluguelsPorVeiculoAsync(veiculoId);
 }
 
